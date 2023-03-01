@@ -1,0 +1,20 @@
+PODS:
+  - SnapKit (5.6.0)
+  - SwiftWebSocket (2.7.0)
+
+DEPENDENCIES:
+  - SnapKit
+  - SwiftWebSocket
+
+SPEC REPOS:
+  trunk:
+    - SnapKit
+    - SwiftWebSocket
+
+SPEC CHECKSUMS:
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  SwiftWebSocket: 612c9729fd503cb6b0b8b45390c788686dac306f
+
+PODFILE CHECKSUM: a49d176ba430d9602ba14410a9255f00accdc897
+
+COCOAPODS: 1.11.3
