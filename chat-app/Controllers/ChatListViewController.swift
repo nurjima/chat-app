@@ -10,6 +10,8 @@ import FirebaseAuth
 import SnapKit
 import JGProgressHUD
 
+
+
 class ChatListViewController: UIViewController {
     
     let spinner = JGProgressHUD(style: .dark)
@@ -81,8 +83,25 @@ extension ChatListViewController {
     
     @objc func didTapComposeButton() {
         let vc = NewChatViewController()
+        vc.completion = { [weak self] result in
+            print("\(result)")
+            self?.createNewChat(result: result)
+        }
         let navVC = UINavigationController(rootViewController: vc)
         present(navVC, animated: true)
+    }
+    
+    private func createNewChat(result: [String: String]) {
+        
+        guard let name = result["name"], let email = result["email"] else {
+            return
+        }
+        
+        let vc = ChatViewController(with: email)
+        vc.isNewchat = true
+        vc.title = name
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -101,7 +120,7 @@ extension ChatListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let vc = ChatViewController()
+        let vc = ChatViewController(with: "klffk@gmial.com")
         vc.title = "Aki Takayashi"
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)

@@ -160,6 +160,7 @@ extension LoginViewController {
             
             // and if the user successfully signed in to their account
             let user = result.user
+            UserDefaults.standard.set(email, forKey: "email")
             print("Successfully logged in the User: \(user)")
             strongSelf.navigationController?.dismiss(animated: true)
         }

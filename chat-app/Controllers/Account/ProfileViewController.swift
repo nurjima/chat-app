@@ -10,7 +10,7 @@ import SnapKit
 import FirebaseAuth
 
 class ProfileViewController: UIViewController {
-
+    
     let table: UITableView = {
         let tv = UITableView()
         tv.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -30,13 +30,16 @@ class ProfileViewController: UIViewController {
     }
     
     func setupLayout() {
+        
         view.addSubview(table)
         table.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-
+    
 }
+
+
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

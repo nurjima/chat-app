@@ -226,8 +226,28 @@ extension RegisterViewController {
                 return
             }
             
+            let chatUser = ChatAppUser(firstName: firstName,
+                                       lastName: lastName,
+                                       emailAddress: email)
             //once the user is created call dbManager
-            DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName, lastName: lastName, emailAddress: email))
+            DatabaseManager.shared.insertUser(with: chatUser) { success in
+                if success {
+                    //upload the image
+                    guard let image = strongSelf.profileImage.image, let data = image.pngData() else {
+                        return
+                    }
+                    let fileName = chatUser.profilePictureFileName
+                    StorageManager.shared.uploadProfilePic(with: data, fileName: fileName) { result in
+                        switch result {
+                        case .success(let downloadUrl):
+                            UserDefaults.standard.set(downloadUrl, forKey: "profile_picture_url")
+                            print(downloadUrl)
+                        case . failure(let error):
+                            print("Storage Manager Error: \(error)")
+                        }
+                    }
+                }
+            }
             
             //we also need to set dismiss here, in case the user succesfully registers
             strongSelf.navigationController?.dismiss(animated: true)

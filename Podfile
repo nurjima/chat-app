@@ -10,7 +10,7 @@ target 'chat-app' do
   pod 'MessageKit' 
   pod 'Firebase/Firestore'
   pod 'FirebaseDatabase'
-  pod 'FirebaseStorage'
+  pod 'Firebase/Storage'
   pod 'SDWebImage'
   pod 'JGProgressHUD'
   pod 'RealmSwift'
