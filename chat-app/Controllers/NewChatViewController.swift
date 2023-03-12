@@ -6,24 +6,55 @@
 //
 
 import UIKit
+import JGProgressHUD
 
 class NewChatViewController: UIViewController {
-
+    
+    let spinner = JGProgressHUD(style: .dark)
+    
+    let searchBar: UISearchBar = {
+        let search = UISearchBar()
+        search.placeholder = "Search for users..."
+        return search
+    }()
+    
+    let tableView: UITableView = {
+        let table = UITableView()
+        table.isHidden = false
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        return table
+    }()
+    
+    let noResults: UILabel = {
+        let label = UILabel()
+        label.isHidden = true
+        label.text = "No results"
+        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = .systemFont(ofSize: 21)
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        view.backgroundColor = .systemBackground
+        
+        searchBar.delegate = self
+        navigationController?.navigationBar.topItem?.titleView = searchBar
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(dismissSelf))
+        
     }
-    
 
-    /*
-    // MARK: - Navigation
+}
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+extension NewChatViewController {
+    @objc private func dismissSelf() {
+        dismiss(animated: true)
     }
-    */
+}
 
+extension NewChatViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
+    }
 }

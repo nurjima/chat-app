@@ -8,9 +8,11 @@
 import UIKit
 import SnapKit
 import FirebaseAuth
-
+import JGProgressHUD
 
 class LoginViewController: UIViewController {
+    
+    let spinner = JGProgressHUD(style: .dark)
     
     let scrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -20,7 +22,7 @@ class LoginViewController: UIViewController {
     
     let profileImage: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "logo")
+        image.image = UIImage(named: "login")
         image.contentMode = .scaleAspectFit
         return image
     }()
@@ -61,7 +63,7 @@ class LoginViewController: UIViewController {
         button.setTitle("Login", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
-        button.backgroundColor = .link
+        button.backgroundColor = .systemTeal
         button.layer.cornerRadius = 12
         button.layer.masksToBounds = true
         
@@ -95,6 +97,8 @@ extension LoginViewController {
         scrollView.addSubview(profileImage)
         profileImage.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
+            make.width.equalTo(250)
+            make.height.equalTo(320)
             make.top.equalTo(scrollView.snp.top)
         }
         
@@ -102,7 +106,7 @@ extension LoginViewController {
         emailField.snp.makeConstraints { make in
             make.width.equalTo(scrollView.snp.width)
             make.height.equalTo(39)
-            make.top.equalTo(profileImage.snp.bottom)
+            make.top.equalTo(profileImage.snp.bottom).offset(20)
         }
         
         scrollView.addSubview(passwordField)
@@ -135,8 +139,20 @@ extension LoginViewController {
             return
         }
         
+        spinner.show(in: view)
+        
         //Firebase Login
-        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+        //weak self to not cause a retention cycle
+        //we can unwrap the weak self, to be strong self
+        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+            guard let strongSelf = self else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                strongSelf.spinner.dismiss()
+            }
+            
             guard let result = authResult, error == nil else {
                 print("Failed to sign in the User with an email: \(email)")
                 return
@@ -145,7 +161,12 @@ extension LoginViewController {
             // and if the user successfully signed in to their account
             let user = result.user
             print("Successfully logged in the User: \(user)")
+            strongSelf.navigationController?.dismiss(animated: true)
         }
+        
+        //once the user succesfully logs in, we need to dismiss this navgiation controller
+        //the way we can do that is by calling "Dismiss"
+        
         
     }
     

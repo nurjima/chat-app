@@ -7,9 +7,12 @@
 
 import UIKit
 import FirebaseAuth
+import JGProgressHUD
 
 class RegisterViewController: UIViewController {
 
+    let spinner = JGProgressHUD(style: .dark)
+    
     let scrollView: UIScrollView = {
         let scroll = UIScrollView()
         scroll.clipsToBounds = true
@@ -186,32 +189,55 @@ extension RegisterViewController {
     //field validation
     @objc private func registerButtonTapped() {
         guard let firstName = firstNameField.text,
-                let lastName = lastNameField.text,
-                let email = emailField.text,
-                let password = passwordField.text,
-                !email.isEmpty, !password.isEmpty,
-                !firstName.isEmpty, !lastName.isEmpty
+              let lastName = lastNameField.text,
+              let email = emailField.text,
+              let password = passwordField.text,
+              !email.isEmpty, !password.isEmpty,
+              !firstName.isEmpty, !lastName.isEmpty
         else {
             alertUser()
             return
         }
         
+        spinner.show(in: view)
+        
         //Firebase authentication
+        DatabaseManager.shared.userExists(with: email) { [weak self] exists in
+            // bind that optional with guard let, ensure that we capture weakly retained reference of self
+            // if we don't include this, just a weak self, funcitonally code woll work, but you wil have a memory leak
+            guard let strongSelf = self else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                strongSelf.spinner.dismiss()
+            }
+            
+            guard !exists else{
+                // user already exists
+                strongSelf.alertUser(message: "Looks like the a user with this email already exists")
+                return
+            }
+    
         FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             // we wanna make sure that error doesn't occur
-            guard let result = authResult, error == nil else {
+            guard authResult != nil, error == nil else {
                 print("Couldn't create a User")
                 return
             }
             
-            let user = result.user
-            print("Created User: \(user)")
-        
+            //once the user is created call dbManager
+            DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName, lastName: lastName, emailAddress: email))
+            
+            //we also need to set dismiss here, in case the user succesfully registers
+            strongSelf.navigationController?.dismiss(animated: true)
         }
     }
+        
+}
     
-    func alertUser() {
-        let alert = UIAlertController(title: "Oops!", message: "Plese enter all information", preferredStyle: .alert)
+    func alertUser(message: String = "Plese enter all information") {
+        let alert = UIAlertController(title: "Oops!", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
         present(alert, animated:  true)
     }
