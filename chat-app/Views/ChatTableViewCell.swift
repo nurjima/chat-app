@@ -8,14 +8,17 @@
 import UIKit
 import SnapKit
 
+
 class ChatTableViewCell: UITableViewCell {
     
-    let userImageView: UIImageView = {
+    static let identifier = "ChatTableViewCell"
+    
+    let profilePic: UIImageView = {
         let image = UIImageView()
+        image.image = UIImage(systemName: "person.circle.fill")
         image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 50
+        image.layer.cornerRadius = 40
         image.layer.masksToBounds = true
-        image.image = UIImage(systemName: "person.bust.fill")
         return image
     }()
     
@@ -29,6 +32,7 @@ class ChatTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 19)
         label.numberOfLines = 0
+        label.textColor = .black
         return label
     }()
     
@@ -38,11 +42,9 @@ class ChatTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        setupLayout()
     }
     
-    public func configure(with model: String) {
-        
-    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -52,24 +54,30 @@ class ChatTableViewCell: UITableViewCell {
 
 extension ChatTableViewCell {
     func setupLayout() {
-        contentView.addSubview(userImageView)
-        userImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(100)
-            make.top.equalToSuperview().offset(10)
-            make.left.equalToSuperview().offset(10)
+        
+        contentView.addSubview(profilePic)
+        profilePic.snp.makeConstraints { make in
+            make.width.height.equalTo(80)
+            make.left.equalTo(10)
+            make.top.equalTo(10)
         }
         
         contentView.addSubview(userNameLabel)
         userNameLabel.snp.makeConstraints { make in
-            make.left.equalTo(userImageView.snp.right).inset(10)
-            make.height.equalToSuperview().offset(20/2)
+            make.top.equalToSuperview().offset(20)
+            make.left.equalTo(profilePic.snp.right).offset(10)
             make.width.equalToSuperview().offset(20)
         }
         contentView.addSubview(userMessageLabel)
         userMessageLabel.snp.makeConstraints { make in
-            make.left.equalTo(userNameLabel.snp.right).inset(10)
-            make.height.equalToSuperview().offset(20/2)
+            make.top.equalTo(userNameLabel.snp.top).offset(30)
+            make.left.equalTo(profilePic.snp.right).offset(10)
             make.width.equalToSuperview().offset(20)
         }
+    }
+    
+    public func configure(with model: Conversation) {
+        self.userMessageLabel.text = model.latestMesage.text
+        self.userNameLabel.text = model.name
     }
 }

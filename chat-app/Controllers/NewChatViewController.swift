@@ -80,7 +80,7 @@ extension NewChatViewController{
         
         noResultsLabel.text = "No Results"
         noResultsLabel.textAlignment = .center
-        noResultsLabel.textColor = .green
+        noResultsLabel.textColor = .black
         noResultsLabel.font = .systemFont(ofSize: 20, weight: .medium)
         noResultsLabel.isHidden = true
     }
